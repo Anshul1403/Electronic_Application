@@ -61,6 +61,7 @@ public class ProductServiceImpl implements ProductService {
         product.setLive(productDto.isLive());
         product.setAddedDate(productDto.getAddedDate());
         product.setStock(productDto.isStock());
+        product.setProductImageName(productDto.getProductImageName());
 
         Product saved = productRepository.save(product);
         return mapper.map(saved,ProductDto.class);
