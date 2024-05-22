@@ -25,8 +25,10 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
     @Autowired
     private ProductRepository productRepository;
+
     @Autowired
     private ModelMapper mapper;
 
@@ -95,25 +97,25 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
-    @Override
-    public PageableResponse<ProductDto> getAllLive(int pageNumber,int pageSize,String sortBy,String sortDir) {
-        Sort sort = (sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()):(Sort.by(sortBy).ascending());
-
-        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
-        Page<Product> page = productRepository.FindByLiveTrue(pageable);
-        List<Product> products = page.getContent();
-        List<ProductDto> dtolist = products.stream().map((product) -> mapper.map(product, ProductDto.class)).collect(Collectors.toList());
-        PageableResponse<ProductDto> response  = new PageableResponse<>();
-        response.setContent(dtolist);
-        response.setPageNumber(page.getNumber());
-        response.setPageSize(page.getSize());
-        response.setTotalElements(page.getTotalElements());
-        response.setTotalPages(page.getTotalPages());
-        response.setLastpage(page.isLast());
-
-
-        return response;
-    }
+//    @Override
+//    public PageableResponse<ProductDto> getAllLive(int pageNumber,int pageSize,String sortBy,String sortDir) {
+//        Sort sort = (sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()):(Sort.by(sortBy).ascending());
+//
+//        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+//        Page<Product> page = productRepository.FindByLiveTrue(pageable);
+//        List<Product> products = page.getContent();
+//        List<ProductDto> dtolist = products.stream().map((product) -> mapper.map(product, ProductDto.class)).collect(Collectors.toList());
+//        PageableResponse<ProductDto> response  = new PageableResponse<>();
+//        response.setContent(dtolist);
+//        response.setPageNumber(page.getNumber());
+//        response.setPageSize(page.getSize());
+//        response.setTotalElements(page.getTotalElements());
+//        response.setTotalPages(page.getTotalPages());
+//        response.setLastpage(page.isLast());
+//
+//
+//        return response;
+//    }
 
     @Override
     public PageableResponse<ProductDto> searchByTitle(String subTitle,int pageNumber,int pageSize,String sortBy,String sortDir) {
