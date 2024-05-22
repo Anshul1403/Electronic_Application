@@ -13,7 +13,11 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>Electronic-Store</name>
 	<description>Backend project</description>
+
 	<properties>
+
+			<sonar.organization>anshul-s-lab</sonar.organization>
+			<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
