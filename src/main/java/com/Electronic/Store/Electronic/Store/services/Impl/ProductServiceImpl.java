@@ -8,6 +8,7 @@ import com.Electronic.Store.Electronic.Store.entities.Category;
 import com.Electronic.Store.Electronic.Store.entities.Product;
 import com.Electronic.Store.Electronic.Store.entities.User;
 import com.Electronic.Store.Electronic.Store.exceptions.ResourceNotFoundException;
+import com.Electronic.Store.Electronic.Store.repositories.CategoryRepository;
 import com.Electronic.Store.Electronic.Store.repositories.ProductRepository;
 import com.Electronic.Store.Electronic.Store.services.ProductService;
 import org.hibernate.boot.model.source.internal.hbm.Helper;
@@ -19,7 +20,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -31,6 +34,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ModelMapper mapper;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
 
 
     @Override
@@ -138,6 +144,64 @@ public class ProductServiceImpl implements ProductService {
         return response;
     }
 
+    @Override
+    public ProductDto createWithCategory(ProductDto productDto, String categoryId) {
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category Not found"));
+        Product product = mapper.map(productDto, Product.class);
+        String productId = UUID.randomUUID().toString();
+        product.setProductId(productId);
+
+        product.setAddedDate(new Date());
+        product.setCategory(category);
+        Product savedProduct = productRepository.save(product);
+
+        return mapper.map(savedProduct,ProductDto.class);
+
+
+
+        
+    }
+
+    @Override
+    public ProductDto assignProductToCategory(String productId, String categoryId) {
+        Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product is not found"));
+
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category Not found"));
+
+        product.setCategory(category);
+        Product saved = productRepository.save(product);
+
+        return mapper.map(saved,ProductDto.class);
+
+    }
+
+    @Override
+    public PageableResponse<ProductDto> getProductWithCategory(String categoryId,int pageNumber, int pageSize, String sortBy,String sortDir) {
+
+        Sort sort = (sortDir.equalsIgnoreCase("desc"))?(Sort.by(sortBy).descending()):(Sort.by(sortBy).ascending());
+
+        Pageable pageable = PageRequest.of(pageNumber,pageSize,sort);
+        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new ResourceNotFoundException("Category Not found"));
+
+        Page<Product> page = productRepository.findByCategory(category,pageable);
+
+        List<Product> products = page.getContent();
+        List<ProductDto> dtolist = products.stream().map((product) -> mapper.map(product, ProductDto.class)).collect(Collectors.toList());
+
+        PageableResponse<ProductDto> response  = new PageableResponse<>();
+        response.setContent(dtolist);
+        response.setPageNumber(page.getNumber());
+        response.setPageSize(page.getSize());
+        response.setTotalElements(page.getTotalElements());
+        response.setTotalPages(page.getTotalPages());
+        response.setLastpage(page.isLast());
+
+
+        return response;
+
+
+    }
+
 
     @Override
     public ProductDto get(String productId) {
@@ -145,6 +209,9 @@ public class ProductServiceImpl implements ProductService {
         Product product = productRepository.findById(productId).orElseThrow(() -> new ResourceNotFoundException("Product Not Found"));
 
 return mapper.map(product,ProductDto.class);
+
+
+
 
 
     }

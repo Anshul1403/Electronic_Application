@@ -1,19 +1,17 @@
 package com.Electronic.Store.Electronic.Store.entities;
 
+import jakarta.persistence.*;
 import org.hibernate.annotations.GeneratorType;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -44,5 +42,8 @@ public class User {
 	
 	@Column(name="user_image_name")
 	private String imageName;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+	private List<Order> orders = new ArrayList<>();
 	
 }

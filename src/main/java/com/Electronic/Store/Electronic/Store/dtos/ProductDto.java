@@ -1,5 +1,6 @@
 package com.Electronic.Store.Electronic.Store.dtos;
 
+import com.Electronic.Store.Electronic.Store.entities.Category;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import lombok.*;
@@ -23,4 +24,5 @@ public class ProductDto {
     private boolean live;
     private boolean stock;
     private String productImageName;
+    private CategoryDto category;
 }
